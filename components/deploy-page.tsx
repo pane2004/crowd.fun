@@ -18,7 +18,6 @@ export function DeployPage() {
   const { toast } = useToast()
   const router = useRouter()
 
-  // Simplified deployment function for demo purposes
   const handleDeploy = async () => {
     if (!goal || !duration) {
       toast({
@@ -29,15 +28,12 @@ export function DeployPage() {
       return
     }
 
-    // In a real app, this would deploy the contract
     toast({
       title: "Deployment initiated",
       description: "This is a demo. In a real app, this would deploy your contract.",
     })
 
-    // Simulate deployment delay
     setTimeout(() => {
-      // Generate a fake contract address for demo purposes
       const fakeContractAddress = "0x" + Math.random().toString(16).slice(2, 42)
       router.push(`/campaign/${fakeContractAddress}`)
     }, 2000)
@@ -101,17 +97,17 @@ export function DeployPage() {
                       type="number"
                       step="0.01"
                       min="0"
-                      placeholder="Enter amount in ETH"
+                      placeholder="Enter amount in WND"
                       value={goal}
                       onChange={(e) => setGoal(e.target.value)}
                       className="bg-background border-muted pr-12"
                     />
                     <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-muted-foreground">
-                      ETH
+                      WND
                     </div>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    The total amount of ETH you want to raise for your campaign
+                    The total amount of WND you want to raise for your campaign
                   </p>
                 </div>
 

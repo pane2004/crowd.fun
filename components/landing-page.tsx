@@ -128,8 +128,8 @@ export function LandingPage() {
             <StepCard
               step="2"
               icon={<Rocket className="h-10 w-10 text-pump-blue" />}
-              title="contribute ETH"
-              description="Support the campaign by contributing any amount of ETH"
+              title="contribute WND"
+              description="Support the campaign by contributing any amount of WND"
             />
             <StepCard
               step="3"
@@ -247,7 +247,7 @@ function CampaignCard({
         <div className="flex justify-between text-sm">
           <div>
             <span className="text-muted-foreground">Goal:</span>
-            <span className="ml-1 font-medium">{goal} ETH</span>
+            <span className="ml-1 font-medium">{goal} WND</span>
           </div>
           <div>
             <span className="text-muted-foreground">Time left:</span>

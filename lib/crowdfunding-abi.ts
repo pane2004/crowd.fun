@@ -1,5 +1,12 @@
 export const crowdfundingABI = [
   {
+    inputs: [],
+    name: "contribute",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "uint256",
@@ -67,6 +74,13 @@ export const crowdfundingABI = [
     type: "event",
   },
   {
+    inputs: [],
+    name: "refund",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     anonymous: false,
     inputs: [
       {
@@ -87,9 +101,9 @@ export const crowdfundingABI = [
   },
   {
     inputs: [],
-    name: "contribute",
+    name: "withdraw",
     outputs: [],
-    stateMutability: "payable",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -191,13 +205,6 @@ export const crowdfundingABI = [
   },
   {
     inputs: [],
-    name: "refund",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "timeLeft",
     outputs: [
       {
@@ -222,11 +229,4 @@ export const crowdfundingABI = [
     stateMutability: "view",
     type: "function",
   },
-  {
-    inputs: [],
-    name: "withdraw",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-]
+];

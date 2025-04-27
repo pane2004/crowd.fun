@@ -131,6 +131,8 @@ export function CampaignPage({ contractAddress }: { contractAddress: string }) {
     })
   }
 
+  console.log(owner);
+
   // Handle refund
   const handleRefund = () => {
     refund({
@@ -259,8 +261,8 @@ export function CampaignPage({ contractAddress }: { contractAddress: string }) {
                     <span className="text-muted-foreground">Progress</span>
                     <span className="font-medium">
                       {goal && totalContributed
-                        ? `${formatEther(totalContributed)} / ${formatEther(goal)} ETH`
-                        : "0 / 0 ETH"}
+                        ? `${formatEther(totalContributed)} / ${formatEther(goal)} WND`
+                        : "0 / 0 WND"}
                     </span>
                   </div>
                   <div className="h-3 bg-muted/50 rounded-full overflow-hidden">
@@ -280,12 +282,12 @@ export function CampaignPage({ contractAddress }: { contractAddress: string }) {
                   <InfoCard
                     icon={<Target className="h-5 w-5 text-pump-green" />}
                     title="Funding Goal"
-                    value={goal ? `${formatEther(goal)} ETH` : "0 ETH"}
+                    value={goal ? `${formatEther(goal)} WND` : "0 WND"}
                   />
                   <InfoCard
                     icon={<Users className="h-5 w-5 text-pump-purple" />}
                     title="Your Contribution"
-                    value={userContribution ? `${formatEther(userContribution)} ETH` : "0 ETH"}
+                    value={userContribution ? `${formatEther(userContribution)} WND` : "0 WND"}
                   />
                 </div>
 
@@ -320,7 +322,7 @@ export function CampaignPage({ contractAddress }: { contractAddress: string }) {
                         <div className="relative flex items-center space-x-2 p-0.5 rounded-lg">
                           <Input
                             type="number"
-                            placeholder="Amount in ETH"
+                            placeholder="Amount in WND"
                             value={contributionAmount}
                             onChange={(e) => setContributionAmount(e.target.value)}
                             disabled={isContributePending || isConfirmingContribute}
@@ -336,7 +338,7 @@ export function CampaignPage({ contractAddress }: { contractAddress: string }) {
                         </div>
                       </div>
                       <p className="text-xs text-muted-foreground text-center">
-                        Contribute ETH to support this campaign. Your funds will be held in the smart contract.
+                        Contribute WND to support this campaign. Your funds will be held in the smart contract.
                       </p>
                     </div>
                   ) : (
