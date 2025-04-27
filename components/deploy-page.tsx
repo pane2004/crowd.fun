@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAccount } from "wagmi"
 import { Button } from "@/components/ui/button"
@@ -10,15 +10,37 @@ import { useToast } from "@/hooks/use-toast"
 import { Logo } from "@/components/logo"
 import { ConnectButton } from "@/components/connect-button"
 import { ArrowLeft, Rocket, Clock, Target, AlertCircle, Sparkles } from "lucide-react"
+import { useDeployContract, useWaitForTransactionReceipt } from "wagmi"
+import { crowdfundingABI } from "@/lib/crowdfunding-abi"
+import { crowdfundingBytecode } from "@/lib/crowdfunding-bytecode"
+import { parseEther } from "viem"
 
 export function DeployPage() {
   const [goal, setGoal] = useState("")
   const [duration, setDuration] = useState("")
-  const { address, isConnected } = useAccount()
+
+  const { isConnected } = useAccount()
   const { toast } = useToast()
   const router = useRouter()
 
-  const handleDeploy = async () => {
+  const {
+    deployContract,                 
+    data: deployData,               
+    isLoading: isDeploying,         
+    isSuccess: isDeployed,          
+    isError,                        
+    error,                          
+  } = useDeployContract({
+    abi: crowdfundingABI,
+    bytecode: crowdfundingBytecode,
+  })
+
+  // wait for the deployment tx to be mined
+  const { isLoading: isWaitingForTransaction } = useWaitForTransactionReceipt({
+    hash: deployData?.transactionHash,
+  })
+
+  const handleDeploy = () => {
     if (!goal || !duration) {
       toast({
         title: "Missing information",
@@ -28,16 +50,33 @@ export function DeployPage() {
       return
     }
 
-    toast({
-      title: "Deployment initiated",
-      description: "This is a demo. In a real app, this would deploy your contract.",
-    })
-
-    setTimeout(() => {
-      const fakeContractAddress = "0x" + Math.random().toString(16).slice(2, 42)
-      router.push(`/campaign/${fakeContractAddress}`)
-    }, 2000)
+    try {
+      deployContract({
+        args: [
+          parseEther(goal),
+          BigInt(parseInt(duration, 10) * 24 * 60 * 60),
+        ],
+      })
+    } catch (e) {
+      console.error("Deployment error:", e)
+      toast({
+        title: "Deployment failed",
+        description: "There was an error deploying your campaign. Please try again.",
+        variant: "destructive",
+      })
+    }
   }
+
+  // on successful deployment, navigate to the new campaign page
+  useEffect(() => {
+    if (isDeployed && deployData?.address) {
+      toast({
+        title: "Campaign deployed!",
+        description: "Your crowdfunding campaign has been successfully deployed.",
+      })
+      router.push(`/campaign/${deployData.address}`)
+    }
+  }, [isDeployed, deployData, router, toast])
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -64,7 +103,9 @@ export function DeployPage() {
             <h1 className="text-3xl font-bold">Launch a Campaign</h1>
             <Sparkles className="h-5 w-5 text-pump-yellow" />
           </div>
-          <p className="text-muted-foreground">Create your own crowdfunding campaign on the blockchain</p>
+          <p className="text-muted-foreground">
+            Create your own crowdfunding campaign on the blockchain
+          </p>
         </div>
 
         <Card className="bg-card border border-border/60 overflow-hidden">
@@ -79,11 +120,14 @@ export function DeployPage() {
               <div className="text-center py-8">
                 <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Connect Your Wallet</h3>
-                <p className="text-muted-foreground mb-6">You need to connect your wallet to deploy a campaign</p>
+                <p className="text-muted-foreground mb-6">
+                  You need to connect your wallet to deploy a campaign
+                </p>
                 <ConnectButton />
               </div>
             ) : (
               <div className="space-y-6">
+                {/* Funding Goal */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Target className="h-4 w-4 text-pump-green" />
@@ -111,6 +155,7 @@ export function DeployPage() {
                   </p>
                 </div>
 
+                {/* Duration */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Clock className="h-4 w-4 text-pump-blue" />
@@ -138,22 +183,25 @@ export function DeployPage() {
                   </p>
                 </div>
 
+                {/* Deploy Button */}
                 <div className="pt-4">
                   <Button
                     onClick={handleDeploy}
-                    disabled={!goal || !duration}
+                    disabled={!goal || !duration || isDeploying || isWaitingForTransaction}
                     className="w-full bg-pump-green hover:bg-pump-green/90 text-black h-12 text-base"
                   >
                     <div className="flex items-center gap-2">
                       <Rocket className="h-5 w-5" />
-                      Launch Campaign
+                      {isDeploying || isWaitingForTransaction
+                        ? "Deploying..."
+                        : "Launch Campaign"}
                     </div>
                   </Button>
                 </div>
 
                 <div className="text-xs text-muted-foreground text-center">
-                  By deploying a campaign, you'll become the campaign owner and will be able to withdraw funds if the
-                  goal is reached.
+                  By deploying a campaign, you’ll become the campaign owner and
+                  will be able to withdraw funds if the goal is reached.
                 </div>
               </div>
             )}
@@ -166,7 +214,9 @@ export function DeployPage() {
         <div className="container">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <Logo />
-            <div className="text-muted-foreground text-sm">© 2025 crowd.fun | All rights reserved</div>
+            <div className="text-muted-foreground text-sm">
+              © 2025 crowd.fun | All rights reserved
+            </div>
           </div>
         </div>
       </footer>
